@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>ThreadX tests</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="./lib/mocha.css" />
+  </head>
+  <body>
+    <div id="mocha"></div>
+
+    <script src="./lib/mocha.js"></script>
+
+    <script class="mocha-init" type="module">
+      mocha.setup({ui:'bdd', slow:'0', global: 'THREADX'});
+      mocha.checkLeaks();
+    </script>
+    <script src="./threadx.test.ts" type="module"></script>
+    <script src="./BufferStruct.test.ts" type="module"></script>
+    <script src="./SharedObject.test.ts" type="module"></script>
+
+    <script type="module">
+      mocha.run();
+    </script>
+  </body>
+</html>

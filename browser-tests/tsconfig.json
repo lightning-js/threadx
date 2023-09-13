@@ -1,0 +1,12 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "types": ["mocha"],
+    "rootDir": "./",
+
+    "composite": true,
+    "moduleResolution": "node16",
+  },
+  "include": ["./**/*.ts"],
+  "exclude": []
+}
