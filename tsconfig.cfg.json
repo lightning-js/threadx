@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "outDir": "build-cfg",
+    "types": ["@types/node"],
+    "moduleResolution": "node",
+    "composite": true,
+    "resolveJsonModule": true,
+    "allowJs": true,
+    "esModuleInterop": true,
+  },
+  "files": [
+    "./.eslintrc.cjs",
+    "./vite.config.ts",
+    "./tsconfig.json",
+    "./typedoc.config.cjs"
+  ]
+}

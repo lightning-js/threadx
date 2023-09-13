@@ -1,0 +1,37 @@
+{
+  "compilerOptions": {
+    "rootDir": "./src",
+    "types": [],
+    "lib": ["ES2022", "DOM"],
+    "outDir": "dist",
+    "allowJs": true,
+    "target": "ES2022",
+    "module": "ES2022",
+    "moduleResolution": "node16",
+    "sourceMap": true,
+    "declaration": true,
+    "experimentalDecorators": true,
+
+    // Type Checking / Syntax Rules
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "noImplicitOverride": true,
+    "allowSyntheticDefaultImports": true,
+    "resolveJsonModule": true,
+    "verbatimModuleSyntax": true,
+  },
+  "include": ["src/**/*"],
+  "exclude": ["src/**/*.test.ts", "node_modules/**/*", "./browser-tests/**/*"],
+  "references": [
+    {
+      "path": "./tsconfig.cfg.json"
+    },
+    {
+      "path": "./tsconfig.vitest.json"
+    },
+    {
+      "path": "./browser-tests/tsconfig.json"
+    },
+  ],
+
+}
