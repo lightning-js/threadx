@@ -20,8 +20,10 @@ import { BufferStruct, genTypeId, structProp } from '@lightningjs/threadx';
 export interface TestBufferStructWritableProps {
   numProp1: number;
   stringProp1: string;
+  booleanProp1: boolean;
   numProp2: number;
   stringProp2: string;
+  booleanProp2: boolean;
 }
 
 export class TestBufferStruct
@@ -48,6 +50,15 @@ export class TestBufferStruct
     // Provided by decorator
   }
 
+  @structProp('boolean')
+  get booleanProp1(): boolean {
+    return false;
+  }
+
+  set booleanProp1(v: boolean) {
+    // Provided by decorator
+  }
+
   @structProp('number')
   get numProp2(): number {
     return 0;
@@ -63,6 +74,15 @@ export class TestBufferStruct
   }
 
   set stringProp2(v: string) {
+    // Provided by decorator
+  }
+
+  @structProp('boolean')
+  get booleanProp2(): boolean {
+    return false;
+  }
+
+  set booleanProp2(v: boolean) {
     // Provided by decorator
   }
 }

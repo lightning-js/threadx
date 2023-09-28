@@ -30,11 +30,13 @@ export class ExtTestSharedObject
 
   constructor(extBufferStruct: ExtTestBufferStruct, isWorker?: boolean) {
     super(extBufferStruct, isWorker, {
+      extBooleanProp1: extBufferStruct.extBooleanProp1,
       extNumProp1: extBufferStruct.extNumProp1,
       extStringProp1: extBufferStruct.extStringProp1,
     } satisfies Omit<ExtTestBufferStructWritableProps, keyof TestBufferStructWritableProps>);
   }
 
+  declare extBooleanProp1: boolean;
   declare extNumProp1: number;
   declare extStringProp1: string;
 }

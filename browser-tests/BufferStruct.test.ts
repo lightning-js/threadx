@@ -34,9 +34,10 @@ describe('BufferStruct', function () {
 
     it('sub-class initial state', () => {
       expect(TestBufferStruct.staticInitialized).to.equal(true);
-      expect(TestBufferStruct.size).to.equal(1072);
+      expect(TestBufferStruct.size).to.equal(1084);
       expect(TestBufferStruct.typeId).to.equal(genTypeId('TEST'));
       expect(TestBufferStruct.typeIdStr).to.equal('TEST');
+      console.log(TestBufferStruct.propDefs);
       expect(TestBufferStruct.propDefs).to.deep.equal([
         {
           propNum: 0,
@@ -56,26 +57,42 @@ describe('BufferStruct', function () {
         },
         {
           propNum: 2,
-          name: 'numProp2',
-          type: 'number',
+          name: 'booleanProp1',
+          type: 'boolean',
           byteOffset: 552,
-          offset: 69,
-          byteSize: 8,
+          offset: 138,
+          byteSize: 4,
         },
         {
           propNum: 3,
+          name: 'numProp2',
+          type: 'number',
+          byteOffset: 560,
+          offset: 70,
+          byteSize: 8,
+        },
+        {
+          propNum: 4,
           name: 'stringProp2',
           type: 'string',
-          byteOffset: 560,
-          offset: 280,
+          byteOffset: 568,
+          offset: 284,
           byteSize: 512,
+        },
+        {
+          propNum: 5,
+          name: 'booleanProp2',
+          type: 'boolean',
+          byteOffset: 1080,
+          offset: 270,
+          byteSize: 4,
         },
       ]);
     });
 
     it('extended sub-class initial state', () => {
       expect(ExtTestBufferStruct.staticInitialized).to.equal(true);
-      expect(ExtTestBufferStruct.size).to.equal(1592);
+      expect(ExtTestBufferStruct.size).to.equal(1608);
       expect(ExtTestBufferStruct.typeId).to.equal(genTypeId('EXTT'));
       expect(ExtTestBufferStruct.typeIdStr).to.equal('EXTT');
       expect(ExtTestBufferStruct.propDefs).to.deep.equal([
@@ -97,34 +114,58 @@ describe('BufferStruct', function () {
         },
         {
           propNum: 2,
-          name: 'numProp2',
-          type: 'number',
+          name: 'booleanProp1',
+          type: 'boolean',
           byteOffset: 552,
-          offset: 69,
-          byteSize: 8,
+          offset: 138,
+          byteSize: 4,
         },
         {
           propNum: 3,
-          name: 'stringProp2',
-          type: 'string',
-          byteOffset: 560,
-          offset: 280,
-          byteSize: 512,
-        },
-        {
-          propNum: 4,
-          name: 'extNumProp1',
+          name: 'numProp2',
           type: 'number',
-          byteOffset: 1072,
-          offset: 134,
+          byteOffset: 560,
+          offset: 70,
           byteSize: 8,
         },
         {
+          propNum: 4,
+          name: 'stringProp2',
+          type: 'string',
+          byteOffset: 568,
+          offset: 284,
+          byteSize: 512,
+        },
+        {
           propNum: 5,
+          name: 'booleanProp2',
+          type: 'boolean',
+          byteOffset: 1080,
+          offset: 270,
+          byteSize: 4,
+        },
+        {
+          propNum: 6,
+          name: 'extBooleanProp1',
+          type: 'boolean',
+          byteOffset: 1084,
+          offset: 271,
+          byteSize: 4,
+        },
+        {
+          propNum: 7,
+          name: 'extNumProp1',
+          type: 'number',
+          byteOffset: 1088,
+          offset: 136,
+          byteSize: 8,
+        },
+        {
+          propNum: 8,
           name: 'extStringProp1',
           type: 'string',
-          byteOffset: 1080,
-          offset: 540,
+          byteOffset: 1096,
+          offset: 548,
           byteSize: 512,
         },
       ]);
@@ -187,14 +228,16 @@ describe('BufferStruct', function () {
       it('should create and use a new SharedArrayBuffer of the proper size if not passed in', () => {
         const bufferStruct = new TestBufferStruct();
         expect(bufferStruct.buffer).to.be.instanceOf(SharedArrayBuffer);
-        expect(bufferStruct.buffer.byteLength).to.equal(TestBufferStruct.size);
+        expect(bufferStruct.buffer.byteLength).to.equal(
+          Math.ceil(TestBufferStruct.size / 8) * 8,
+        );
       });
 
       it('should create and use a new SharedArrayBuffer of the proper size if not passed in (extended)', () => {
         const bufferStruct = new ExtTestBufferStruct();
         expect(bufferStruct.buffer).to.be.instanceOf(SharedArrayBuffer);
         expect(bufferStruct.buffer.byteLength).to.equal(
-          ExtTestBufferStruct.size,
+          Math.ceil(ExtTestBufferStruct.size / 8) * 8,
         );
       });
 
@@ -302,6 +345,36 @@ describe('BufferStruct', function () {
         expect(bufferStruct.extNumProp1).to.equal(0);
       });
 
+      it('should set and get values boolean properties', () => {
+        const bufferStruct = new TestBufferStruct();
+        // Boolean
+        bufferStruct.booleanProp1 = true;
+        bufferStruct.booleanProp2 = false;
+        expect(bufferStruct.booleanProp1).to.equal(true);
+        expect(bufferStruct.booleanProp2).to.equal(false);
+        bufferStruct.booleanProp1 = false;
+        bufferStruct.booleanProp2 = true;
+        expect(bufferStruct.booleanProp1).to.equal(false);
+        expect(bufferStruct.booleanProp2).to.equal(true);
+      });
+
+      it('should set and get values boolean properties (extended)', () => {
+        const bufferStruct = new ExtTestBufferStruct();
+        // Boolean
+        bufferStruct.booleanProp1 = false;
+        bufferStruct.booleanProp2 = true;
+        bufferStruct.extBooleanProp1 = false;
+        expect(bufferStruct.booleanProp1).to.equal(false);
+        expect(bufferStruct.booleanProp2).to.equal(true);
+        expect(bufferStruct.extBooleanProp1).to.equal(false);
+        bufferStruct.booleanProp1 = true;
+        bufferStruct.booleanProp2 = false;
+        bufferStruct.extBooleanProp1 = true;
+        expect(bufferStruct.booleanProp1).to.equal(true);
+        expect(bufferStruct.booleanProp2).to.equal(false);
+        expect(bufferStruct.extBooleanProp1).to.equal(true);
+      });
+
       it('should set and get values string properties', () => {
         const bufferStruct = new TestBufferStruct();
         // String
@@ -370,31 +443,10 @@ describe('BufferStruct', function () {
         expect(bufferStruct.isDirty()).to.equal(false);
         expect(bufferStruct.isDirty(0)).to.equal(false); // numProp1
         expect(bufferStruct.isDirty(1)).to.equal(false); // stringProp1
-        expect(bufferStruct.isDirty(2)).to.equal(false); // numProp2
-        expect(bufferStruct.isDirty(3)).to.equal(false); // stringProp2
-        bufferStruct.numProp1 = 123;
-        expect(bufferStruct.isDirty()).to.equal(true);
-        expect(bufferStruct.isDirty(0)).to.equal(true);
-        expect(bufferStruct.isDirty(1)).to.equal(false);
-        expect(bufferStruct.isDirty(2)).to.equal(false);
-        expect(bufferStruct.isDirty(3)).to.equal(false);
-        bufferStruct.stringProp1 = 'abc';
-        expect(bufferStruct.isDirty()).to.equal(true);
-        expect(bufferStruct.isDirty(0)).to.equal(true);
-        expect(bufferStruct.isDirty(1)).to.equal(true);
-        expect(bufferStruct.isDirty(2)).to.equal(false);
-        expect(bufferStruct.isDirty(3)).to.equal(false);
-      });
-
-      it('isDirty() should indicate if any or a specific property was changed (extended)', () => {
-        const bufferStruct = new ExtTestBufferStruct();
-        expect(bufferStruct.isDirty()).to.equal(false);
-        expect(bufferStruct.isDirty(0)).to.equal(false); // numProp1
-        expect(bufferStruct.isDirty(1)).to.equal(false); // stringProp1
-        expect(bufferStruct.isDirty(2)).to.equal(false); // numProp2
-        expect(bufferStruct.isDirty(3)).to.equal(false); // stringProp2
-        expect(bufferStruct.isDirty(4)).to.equal(false); // extNumProp1
-        expect(bufferStruct.isDirty(5)).to.equal(false); // extStringProp1
+        expect(bufferStruct.isDirty(2)).to.equal(false); // booleanProp1
+        expect(bufferStruct.isDirty(3)).to.equal(false); // numProp2
+        expect(bufferStruct.isDirty(4)).to.equal(false); // stringProp2
+        expect(bufferStruct.isDirty(5)).to.equal(false); // booleanProp2
         bufferStruct.numProp1 = 123;
         expect(bufferStruct.isDirty()).to.equal(true);
         expect(bufferStruct.isDirty(0)).to.equal(true);
@@ -403,6 +455,39 @@ describe('BufferStruct', function () {
         expect(bufferStruct.isDirty(3)).to.equal(false);
         expect(bufferStruct.isDirty(4)).to.equal(false);
         expect(bufferStruct.isDirty(5)).to.equal(false);
+        bufferStruct.stringProp1 = 'abc';
+        expect(bufferStruct.isDirty()).to.equal(true);
+        expect(bufferStruct.isDirty(0)).to.equal(true);
+        expect(bufferStruct.isDirty(1)).to.equal(true);
+        expect(bufferStruct.isDirty(2)).to.equal(false);
+        expect(bufferStruct.isDirty(3)).to.equal(false);
+        expect(bufferStruct.isDirty(4)).to.equal(false);
+        expect(bufferStruct.isDirty(5)).to.equal(false);
+      });
+
+      it('isDirty() should indicate if any or a specific property was changed (extended)', () => {
+        const bufferStruct = new ExtTestBufferStruct();
+        expect(bufferStruct.isDirty()).to.equal(false);
+        expect(bufferStruct.isDirty(0)).to.equal(false); // numProp1
+        expect(bufferStruct.isDirty(1)).to.equal(false); // stringProp1
+        expect(bufferStruct.isDirty(2)).to.equal(false); // booleanProp1
+        expect(bufferStruct.isDirty(3)).to.equal(false); // numProp2
+        expect(bufferStruct.isDirty(4)).to.equal(false); // stringProp2
+        expect(bufferStruct.isDirty(5)).to.equal(false); // booleanProp2
+        expect(bufferStruct.isDirty(6)).to.equal(false); // extBooleanProp1
+        expect(bufferStruct.isDirty(7)).to.equal(false); // extNumProp1
+        expect(bufferStruct.isDirty(8)).to.equal(false); // extStringProp1
+        bufferStruct.numProp1 = 123;
+        expect(bufferStruct.isDirty()).to.equal(true);
+        expect(bufferStruct.isDirty(0)).to.equal(true);
+        expect(bufferStruct.isDirty(1)).to.equal(false);
+        expect(bufferStruct.isDirty(2)).to.equal(false);
+        expect(bufferStruct.isDirty(3)).to.equal(false);
+        expect(bufferStruct.isDirty(4)).to.equal(false);
+        expect(bufferStruct.isDirty(5)).to.equal(false);
+        expect(bufferStruct.isDirty(6)).to.equal(false);
+        expect(bufferStruct.isDirty(7)).to.equal(false);
+        expect(bufferStruct.isDirty(8)).to.equal(false);
         bufferStruct.extStringProp1 = 'abc';
         expect(bufferStruct.isDirty()).to.equal(true);
         expect(bufferStruct.isDirty(0)).to.equal(true);
@@ -410,19 +495,25 @@ describe('BufferStruct', function () {
         expect(bufferStruct.isDirty(2)).to.equal(false);
         expect(bufferStruct.isDirty(3)).to.equal(false);
         expect(bufferStruct.isDirty(4)).to.equal(false);
-        expect(bufferStruct.isDirty(5)).to.equal(true);
+        expect(bufferStruct.isDirty(5)).to.equal(false);
+        expect(bufferStruct.isDirty(6)).to.equal(false);
+        expect(bufferStruct.isDirty(7)).to.equal(false);
+        expect(bufferStruct.isDirty(8)).to.equal(true);
       });
 
       it('resetDirty() should reset the dirty bits', () => {
         const bufferStruct = new TestBufferStruct();
         bufferStruct.numProp1 = 123;
         bufferStruct.stringProp1 = 'abc';
+        bufferStruct.booleanProp2 = true;
         bufferStruct.resetDirty();
         expect(bufferStruct.isDirty()).to.equal(false);
         expect(bufferStruct.isDirty(0)).to.equal(false); // numProp1
         expect(bufferStruct.isDirty(1)).to.equal(false); // stringProp1
-        expect(bufferStruct.isDirty(2)).to.equal(false); // numProp2
-        expect(bufferStruct.isDirty(3)).to.equal(false); // stringProp2
+        expect(bufferStruct.isDirty(2)).to.equal(false); // booleanProp1
+        expect(bufferStruct.isDirty(3)).to.equal(false); // numProp2
+        expect(bufferStruct.isDirty(4)).to.equal(false); // stringProp2
+        expect(bufferStruct.isDirty(5)).to.equal(false); // booleanProp2
       });
     });
 

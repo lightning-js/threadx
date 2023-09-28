@@ -36,8 +36,10 @@ export class TestSharedObject
       ...extendedCurProps,
       numProp1: sharedNodeStruct.numProp1,
       stringProp1: sharedNodeStruct.stringProp1,
+      booleanProp1: sharedNodeStruct.booleanProp1,
       numProp2: sharedNodeStruct.numProp2,
       stringProp2: sharedNodeStruct.stringProp2,
+      booleanProp2: sharedNodeStruct.booleanProp2,
     });
     if (isWorker) {
       this.on('ping', (target, event) => {
@@ -52,8 +54,10 @@ export class TestSharedObject
 
   declare numProp1: number;
   declare stringProp1: string;
+  declare booleanProp1: boolean;
   declare numProp2: number;
   declare stringProp2: string;
+  declare booleanProp2: boolean;
 
   exposedOnDestroy() {
     // Exposed to allow testing of onDestroy() method
