@@ -123,7 +123,8 @@ export function structProp(type: StructPropType, options?: StructPropOptions) {
     };
     propDefs.push(propDef);
 
-    constructor.size += byteSize;
+    // console.log(constructor.size, byteOffset, byteSize, propDef);
+    constructor.size = byteOffset + byteSize;
 
     // TODO: Move the descriptors to the prototype to avoid code duplication/closures
     descriptor.get = function (this: BufferStruct) {
