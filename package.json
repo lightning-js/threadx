@@ -1,6 +1,6 @@
 {
   "name": "@lightningjs/threadx",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "description": "A web browser-based JavaScript library that helps manage the communcation of data between one or more web worker threads.",
   "type": "module",
   "main": "./dist/index.js",
