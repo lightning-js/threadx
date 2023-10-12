@@ -24,7 +24,8 @@
  * In the future we may try to get ThreadX working with NodeJS, in that case
  * this can be changed to include NodeJS vs Browser detection logic.
  */
-export const resolvedGlobal = self;
+export const resolvedGlobal: any =
+  typeof self === 'undefined' ? globalThis : self;
 
 export function assertTruthy(
   condition: unknown,
