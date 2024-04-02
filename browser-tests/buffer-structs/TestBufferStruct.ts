@@ -21,9 +21,9 @@ export interface TestBufferStructWritableProps {
   numProp1: number;
   stringProp1: string;
   booleanProp1: boolean;
-  numProp2: number;
-  stringProp2: string;
-  booleanProp2: boolean;
+  numProp2?: number;
+  stringProp2?: string;
+  booleanProp2: boolean | undefined;
 }
 
 export class TestBufferStruct
@@ -59,30 +59,36 @@ export class TestBufferStruct
     // Provided by decorator
   }
 
-  @structProp('number')
-  get numProp2(): number {
+  @structProp('number', {
+    allowUndefined: true,
+  })
+  get numProp2(): number | undefined {
     return 0;
   }
 
-  set numProp2(v: number) {
+  set numProp2(v: number | undefined) {
     // Provided by decorator
   }
 
-  @structProp('string')
-  get stringProp2(): string {
+  @structProp('string', {
+    allowUndefined: true,
+  })
+  get stringProp2(): string | undefined {
     return '';
   }
 
-  set stringProp2(v: string) {
+  set stringProp2(v: string | undefined) {
     // Provided by decorator
   }
 
-  @structProp('boolean')
-  get booleanProp2(): boolean {
+  @structProp('boolean', {
+    allowUndefined: true,
+  })
+  get booleanProp2(): boolean | undefined {
     return false;
   }
 
-  set booleanProp2(v: boolean) {
+  set booleanProp2(v: boolean | undefined) {
     // Provided by decorator
   }
 }

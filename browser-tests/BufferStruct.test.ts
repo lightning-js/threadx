@@ -26,7 +26,7 @@ describe('BufferStruct', function () {
   describe('static', () => {
     it('base initial state', () => {
       expect(BufferStruct.staticInitialized).to.equal(false);
-      expect(BufferStruct.size).to.equal(32);
+      expect(BufferStruct.size).to.equal(40);
       expect(BufferStruct.typeId).to.equal(0);
       expect(BufferStruct.typeIdStr).to.equal('');
       expect(BufferStruct.propDefs).to.deep.equal([]);
@@ -34,65 +34,70 @@ describe('BufferStruct', function () {
 
     it('sub-class initial state', () => {
       expect(TestBufferStruct.staticInitialized).to.equal(true);
-      expect(TestBufferStruct.size).to.equal(1084);
+      expect(TestBufferStruct.size).to.equal(1092);
       expect(TestBufferStruct.typeId).to.equal(genTypeId('TEST'));
       expect(TestBufferStruct.typeIdStr).to.equal('TEST');
-      console.log(TestBufferStruct.propDefs);
       expect(TestBufferStruct.propDefs).to.deep.equal([
         {
           propNum: 0,
           name: 'numProp1',
           type: 'number',
-          byteOffset: 32,
-          offset: 4,
+          byteOffset: 40,
+          offset: 5,
           byteSize: 8,
+          allowUndefined: false,
         },
         {
           propNum: 1,
           name: 'stringProp1',
           type: 'string',
-          byteOffset: 40,
-          offset: 20,
+          byteOffset: 48,
+          offset: 24,
           byteSize: 512,
+          allowUndefined: false,
         },
         {
           propNum: 2,
           name: 'booleanProp1',
           type: 'boolean',
-          byteOffset: 552,
-          offset: 138,
+          byteOffset: 560,
+          offset: 140,
           byteSize: 4,
+          allowUndefined: false,
         },
         {
           propNum: 3,
           name: 'numProp2',
           type: 'number',
-          byteOffset: 560,
-          offset: 70,
+          byteOffset: 568,
+          offset: 71,
           byteSize: 8,
+          allowUndefined: true,
         },
         {
           propNum: 4,
           name: 'stringProp2',
           type: 'string',
-          byteOffset: 568,
-          offset: 284,
+          byteOffset: 576,
+          offset: 288,
           byteSize: 512,
+          allowUndefined: true,
         },
         {
           propNum: 5,
           name: 'booleanProp2',
           type: 'boolean',
-          byteOffset: 1080,
-          offset: 270,
+          byteOffset: 1088,
+          offset: 272,
           byteSize: 4,
+          allowUndefined: true,
         },
       ]);
     });
 
     it('extended sub-class initial state', () => {
       expect(ExtTestBufferStruct.staticInitialized).to.equal(true);
-      expect(ExtTestBufferStruct.size).to.equal(1608);
+      expect(ExtTestBufferStruct.size).to.equal(1620);
       expect(ExtTestBufferStruct.typeId).to.equal(genTypeId('EXTT'));
       expect(ExtTestBufferStruct.typeIdStr).to.equal('EXTT');
       expect(ExtTestBufferStruct.propDefs).to.deep.equal([
@@ -100,73 +105,91 @@ describe('BufferStruct', function () {
           propNum: 0,
           name: 'numProp1',
           type: 'number',
-          byteOffset: 32,
-          offset: 4,
+          byteOffset: 40,
+          offset: 5,
           byteSize: 8,
+          allowUndefined: false,
         },
         {
           propNum: 1,
           name: 'stringProp1',
           type: 'string',
-          byteOffset: 40,
-          offset: 20,
+          byteOffset: 48,
+          offset: 24,
           byteSize: 512,
+          allowUndefined: false,
         },
         {
           propNum: 2,
           name: 'booleanProp1',
           type: 'boolean',
-          byteOffset: 552,
-          offset: 138,
+          byteOffset: 560,
+          offset: 140,
           byteSize: 4,
+          allowUndefined: false,
         },
         {
           propNum: 3,
           name: 'numProp2',
           type: 'number',
-          byteOffset: 560,
-          offset: 70,
+          byteOffset: 568,
+          offset: 71,
           byteSize: 8,
+          allowUndefined: true,
         },
         {
           propNum: 4,
           name: 'stringProp2',
           type: 'string',
-          byteOffset: 568,
-          offset: 284,
+          byteOffset: 576,
+          offset: 288,
           byteSize: 512,
+          allowUndefined: true,
         },
         {
           propNum: 5,
           name: 'booleanProp2',
           type: 'boolean',
-          byteOffset: 1080,
-          offset: 270,
+          byteOffset: 1088,
+          offset: 272,
           byteSize: 4,
+          allowUndefined: true,
         },
         {
           propNum: 6,
           name: 'extBooleanProp1',
           type: 'boolean',
-          byteOffset: 1084,
-          offset: 271,
+          byteOffset: 1092,
+          offset: 273,
           byteSize: 4,
+          allowUndefined: true,
         },
         {
           propNum: 7,
           name: 'extNumProp1',
           type: 'number',
-          byteOffset: 1088,
-          offset: 136,
+          byteOffset: 1096,
+          offset: 137,
           byteSize: 8,
+          allowUndefined: false,
         },
         {
           propNum: 8,
           name: 'extStringProp1',
           type: 'string',
-          byteOffset: 1096,
-          offset: 548,
+          byteOffset: 1104,
+          offset: 552,
           byteSize: 512,
+          allowUndefined: false,
+        },
+        {
+          propNum: 9,
+          name: 'extBooleanProp2',
+          type: 'boolean',
+          byteOffset: 1616,
+          offset: 404,
+          byteSize: 4,
+          allowUndefined: true,
         },
       ]);
     });
@@ -245,22 +268,29 @@ describe('BufferStruct', function () {
         const bufferStruct = new TestBufferStruct();
         // Number
         expect(bufferStruct.numProp1).to.equal(0);
-        expect(bufferStruct.numProp2).to.equal(0);
+        expect(bufferStruct.numProp2).to.equal(undefined);
         // String
         expect(bufferStruct.stringProp1).to.equal('');
-        expect(bufferStruct.stringProp2).to.equal('');
+        expect(bufferStruct.stringProp2).to.equal(undefined);
+        // Boolean
+        expect(bufferStruct.booleanProp1).to.equal(false);
+        expect(bufferStruct.booleanProp2).to.equal(undefined);
       });
 
       it('should create instance with default empty values (extended)', () => {
         const bufferStruct = new ExtTestBufferStruct();
         // Number
         expect(bufferStruct.numProp1).to.equal(0);
-        expect(bufferStruct.numProp2).to.equal(0);
+        expect(bufferStruct.numProp2).to.equal(undefined);
         expect(bufferStruct.extNumProp1).to.equal(0);
         // String
         expect(bufferStruct.stringProp1).to.equal('');
-        expect(bufferStruct.stringProp2).to.equal('');
+        expect(bufferStruct.stringProp2).to.equal(undefined);
         expect(bufferStruct.extStringProp1).to.equal('');
+        // Boolean
+        expect(bufferStruct.booleanProp1).to.equal(false);
+        expect(bufferStruct.booleanProp2).to.equal(undefined);
+        expect(bufferStruct.extBooleanProp1).to.equal(undefined);
       });
 
       it('should construct instance with a cross-worker unique id', () => {
@@ -311,6 +341,71 @@ describe('BufferStruct', function () {
         expect(bufferStruct2.stringProp1).to.equal('abc');
         expect(bufferStruct2.stringProp2).to.equal('def');
         expect(bufferStruct2.extStringProp1).to.equal('ghi');
+      });
+    });
+
+    describe('allowUndefined properties', () => {
+      it('should be initialized to undefined', () => {
+        const bufferStruct = new ExtTestBufferStruct();
+        // Number
+        expect(bufferStruct.numProp2).to.equal(undefined);
+        // String
+        expect(bufferStruct.stringProp2).to.equal(undefined);
+        // Boolean
+        expect(bufferStruct.booleanProp2).to.equal(undefined);
+        expect(bufferStruct.extBooleanProp1).to.equal(undefined);
+      });
+
+      it('should set to defined values, then to undefined values and then back', () => {
+        const bufferStruct = new ExtTestBufferStruct();
+        // Set to defined
+        // Number
+        bufferStruct.numProp2 = 0;
+        expect(bufferStruct.numProp2).to.equal(0);
+        // String
+        bufferStruct.stringProp2 = '';
+        expect(bufferStruct.stringProp2).to.equal('');
+        // Boolean
+        bufferStruct.booleanProp2 = false;
+        expect(bufferStruct.booleanProp2).to.equal(false);
+
+        // Set to undefined
+        // Number
+        bufferStruct.numProp2 = undefined;
+        expect(bufferStruct.numProp2).to.equal(undefined);
+        // String
+        bufferStruct.stringProp2 = undefined;
+        expect(bufferStruct.stringProp2).to.equal(undefined);
+        // Boolean
+        bufferStruct.booleanProp2 = undefined;
+        expect(bufferStruct.booleanProp2).to.equal(undefined);
+
+        // Set back to defined
+        // Number
+        bufferStruct.numProp2 = 123;
+        expect(bufferStruct.numProp2).to.equal(123);
+        // String
+        bufferStruct.stringProp2 = 'abc';
+        expect(bufferStruct.stringProp2).to.equal('abc');
+        // Boolean
+        bufferStruct.booleanProp2 = true;
+        expect(bufferStruct.booleanProp2).to.equal(true);
+      });
+
+      it('should be able to be rehydrated from ArrayBuffer', () => {
+        const bufferStruct = new ExtTestBufferStruct();
+        // Set to defined
+        bufferStruct.numProp2 = 123;
+        bufferStruct.stringProp2 = 'abc';
+        bufferStruct.booleanProp2 = true;
+        bufferStruct.numProp2 = undefined;
+        bufferStruct.stringProp2 = undefined;
+        bufferStruct.booleanProp2 = undefined;
+
+        const bufferStruct2 = new ExtTestBufferStruct(bufferStruct.buffer);
+        expect(bufferStruct2.numProp2).to.equal(undefined);
+        expect(bufferStruct2.stringProp2).to.equal(undefined);
+        expect(bufferStruct2.booleanProp2).to.equal(undefined);
       });
     });
 
@@ -618,6 +713,11 @@ describe('BufferStruct', function () {
          * mechanism on either side.
          */
         const bufferStruct = new TestBufferStruct();
+
+        // Define the allowUndefined properties
+        bufferStruct.numProp2 = 0;
+        bufferStruct.stringProp2 = '';
+
         threadx.sendMessage('test-worker', {
           type: 'fight-for-lock',
           buffer: bufferStruct.buffer,

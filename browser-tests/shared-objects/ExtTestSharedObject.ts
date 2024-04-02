@@ -33,10 +33,12 @@ export class ExtTestSharedObject
       extBooleanProp1: extBufferStruct.extBooleanProp1,
       extNumProp1: extBufferStruct.extNumProp1,
       extStringProp1: extBufferStruct.extStringProp1,
+      extBooleanProp2: extBufferStruct.extBooleanProp2,
     } satisfies Omit<ExtTestBufferStructWritableProps, keyof TestBufferStructWritableProps>);
   }
 
-  declare extBooleanProp1: boolean;
+  declare extBooleanProp1: boolean | undefined;
   declare extNumProp1: number;
   declare extStringProp1: string;
+  declare extBooleanProp2: boolean | undefined;
 }

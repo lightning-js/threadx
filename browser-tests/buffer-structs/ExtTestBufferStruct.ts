@@ -23,9 +23,10 @@ import {
 
 export interface ExtTestBufferStructWritableProps
   extends TestBufferStructWritableProps {
-  extBooleanProp1: boolean;
+  extBooleanProp1?: boolean;
   extNumProp1: number;
   extStringProp1: string;
+  extBooleanProp2?: boolean;
 }
 
 export class ExtTestBufferStruct
@@ -34,12 +35,14 @@ export class ExtTestBufferStruct
 {
   static override typeId = genTypeId('EXTT');
 
-  @structProp('boolean')
-  get extBooleanProp1(): boolean {
+  @structProp('boolean', {
+    allowUndefined: true,
+  })
+  get extBooleanProp1(): boolean | undefined {
     return false;
   }
 
-  set extBooleanProp1(v: boolean) {
+  set extBooleanProp1(v: boolean | undefined) {
     // Provided by decorator
   }
 
@@ -58,6 +61,17 @@ export class ExtTestBufferStruct
   }
 
   set extStringProp1(v: string) {
+    // Provided by decorator
+  }
+
+  @structProp('boolean', {
+    allowUndefined: true,
+  })
+  get extBooleanProp2(): boolean | undefined {
+    return false;
+  }
+
+  set extBooleanProp2(v: boolean | undefined) {
     // Provided by decorator
   }
 }

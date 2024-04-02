@@ -70,8 +70,10 @@ describe('SharedObject', function () {
         const sharedObject = new TestSharedObject(struct);
         expect(sharedObject.numProp1).to.equal(0);
         expect(sharedObject.stringProp1).to.equal('');
-        expect(sharedObject.numProp2).to.equal(0);
-        expect(sharedObject.stringProp2).to.equal('');
+        expect(sharedObject.booleanProp1).to.equal(false);
+        expect(sharedObject.numProp2).to.equal(undefined);
+        expect(sharedObject.stringProp2).to.equal(undefined);
+        expect(sharedObject.booleanProp2).to.equal(undefined);
       });
 
       it('should create a new SharedObject instance with the correct values from BufferStruct (extended, default values)', () => {
@@ -79,10 +81,13 @@ describe('SharedObject', function () {
         const sharedObject = new ExtTestSharedObject(struct);
         expect(sharedObject.numProp1).to.equal(0);
         expect(sharedObject.stringProp1).to.equal('');
-        expect(sharedObject.numProp2).to.equal(0);
-        expect(sharedObject.stringProp2).to.equal('');
+        expect(sharedObject.booleanProp1).to.equal(false);
+        expect(sharedObject.numProp2).to.equal(undefined);
+        expect(sharedObject.stringProp2).to.equal(undefined);
+        expect(sharedObject.booleanProp2).to.equal(undefined);
         expect(sharedObject.extNumProp1).to.equal(0);
         expect(sharedObject.extStringProp1).to.equal('');
+        expect(sharedObject.extBooleanProp1).to.equal(undefined);
       });
 
       it('should create a new SharedObject instance with the correct values from BufferStruct (provided values)', () => {
@@ -167,25 +172,32 @@ describe('SharedObject', function () {
         // Update properties
         sharedObject.numProp1 = 123;
         sharedObject.stringProp1 = 'test';
+        sharedObject.numProp2 = 456;
+        sharedObject.stringProp2 = 'test2';
 
         // Check that object was updated on the other side
         const result = await threadx.sendMessageAsync('test-worker', {
           type: 'shared-object-check',
           objectId: sharedObject.id,
         });
+        console.log(result.properties);
 
         expect(result.objectKnownByThreadX).to.equal(true);
         expect(result.isInstanceOfTestSharedObject).to.equal(true);
         expect(result.properties).to.deep.equal({
           numProp1: 123,
           stringProp1: 'test',
-          numProp2: 0,
-          stringProp2: '',
+          booleanProp1: false,
+          numProp2: 456,
+          stringProp2: 'test2',
+          booleanProp2: undefined,
         });
       });
 
-      it('property updates from both sides should be synchronized', async () => {
-        const sharedObject = new TestSharedObject(new TestBufferStruct());
+      it('property updates from both sides should be synchronized', async function () {
+        this.timeout(1000000);
+
+        const sharedObject = new ExtTestSharedObject(new ExtTestBufferStruct());
         // We use the raceNotifyBuffer to synchronize the start of the test
         // We can't use the BufferStruct's notify/wait because when used in
         // a SharedObject, the BufferStruct's notify/wait will be used by the
@@ -228,16 +240,17 @@ describe('SharedObject', function () {
         const end = Date.now() + 1000;
         while (Date.now() < end) {
           // We only count the updates if they came from the opposite side
-          // The worker updates with the values 2 and 'two',
-          // while we update with the values 1 and 'one'
-          if (sharedObject.numProp1 === 2) {
+          // The worker updates with the values 2, 'two', undefined
+          // while we update with the values 1, 'one', true
+          if (sharedObject.extBooleanProp1 === undefined) {
             numWorkerSideUpdates++;
             // We should never have a case where numProp1 does not equal
             // numProp2, or stringProp1 does not equal stringProp2
             // Otherwise the test should fail.
             if (
               sharedObject.numProp1 === sharedObject.numProp2 &&
-              sharedObject.stringProp1 === sharedObject.stringProp2
+              sharedObject.stringProp1 === sharedObject.stringProp2 &&
+              sharedObject.extBooleanProp1 === sharedObject.extBooleanProp2
             ) {
               numWorkerUpdatesThatMatched++;
             }
@@ -247,6 +260,8 @@ describe('SharedObject', function () {
           sharedObject.numProp2 = 1;
           sharedObject.stringProp1 = 'one';
           sharedObject.stringProp2 = 'one';
+          sharedObject.extBooleanProp1 = true;
+          sharedObject.extBooleanProp2 = true;
 
           // Force the next iteration to start in a new Task allowing
           // this Task to end and the queued mutation microtask to run
