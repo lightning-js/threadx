@@ -111,14 +111,17 @@ const threadX = ThreadX.init({
         };
       }
       sharedObjectStash.set(objectId, sharedObject);
+
       return {
         objectKnownByThreadX: true,
         isInstanceOfTestSharedObject: true,
         properties: {
           numProp1: sharedObject.numProp1,
           stringProp1: sharedObject.stringProp1,
+          booleanProp1: sharedObject.booleanProp1,
           numProp2: sharedObject.numProp2,
           stringProp2: sharedObject.stringProp2,
+          booleanProp2: sharedObject.booleanProp2,
         },
       };
     } else if (message.type === 'shared-object-synchronize-test') {
@@ -126,7 +129,7 @@ const threadX = ThreadX.init({
       const raceNotifyBuffer = message.raceNotifyBuffer as SharedArrayBuffer;
       const raceNotify = new Int32Array(raceNotifyBuffer);
       const sharedObject = threadX.getSharedObjectById(objectId);
-      assertTruthy(sharedObject instanceof TestSharedObject);
+      assertTruthy(sharedObject instanceof ExtTestSharedObject);
       // Tell the parent worker that we're ready to start fightning for the
       // lock
       Atomics.store(raceNotify, 0, 1);
@@ -151,6 +154,8 @@ const threadX = ThreadX.init({
         sharedObject.numProp2 = 2;
         sharedObject.stringProp1 = 'two';
         sharedObject.stringProp2 = 'two';
+        sharedObject.extBooleanProp1 = undefined;
+        sharedObject.extBooleanProp2 = undefined;
         await delay(0);
       }
       return {

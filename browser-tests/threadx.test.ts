@@ -288,16 +288,20 @@ describe('ThreadX', function () {
           expect(result1.properties).to.deep.equal({
             numProp1: 0,
             stringProp1: '',
-            numProp2: 0,
-            stringProp2: '',
+            booleanProp1: false,
+            numProp2: undefined,
+            stringProp2: undefined,
+            booleanProp2: undefined,
           });
           expect(result2.objectKnownByThreadX).to.equal(true);
           expect(result2.isInstanceOfTestSharedObject).to.equal(true);
           expect(result2.properties).to.deep.equal({
             numProp1: 0,
             stringProp1: '',
-            numProp2: 0,
-            stringProp2: '',
+            booleanProp1: false,
+            numProp2: undefined,
+            stringProp2: undefined,
+            booleanProp2: undefined,
           });
         });
       });

@@ -22,6 +22,8 @@ const TYPEID_INT32_INDEX = 0;
 const NOTIFY_INT32_INDEX = 1;
 const LOCK_INT32_INDEX = 2;
 const DIRTY_INT32_INDEX = 6;
+const UNDEFINED_INT32_INDEX = 8;
+
 const ID_FLOAT64_INDEX = 2;
 
 const MAX_STRING_SIZE = 255;
@@ -75,6 +77,15 @@ function valuesAreEqual(a: string | number | boolean, b: unknown): boolean {
 export interface StructPropOptions {
   propToBuffer?(value: unknown): unknown;
   bufferToProp?(value: unknown): unknown;
+  /**
+   * Allow the value of this property to be undefined.
+   *
+   * @remarks
+   * If true, the property will be undefined by default. Be sure to type
+   * the property as `type | undefined` in the BufferStruct interface,
+   * getter and setter.
+   */
+  allowUndefined?: boolean;
 }
 
 export function structProp(type: StructPropType, options?: StructPropOptions) {
@@ -113,13 +124,15 @@ export function structProp(type: StructPropType, options?: StructPropOptions) {
 
     const propDefs = constructor.propDefs;
     const propNum = propDefs.length;
-    const propDef = {
+    const allowUndefined = !!options?.allowUndefined;
+    const propDef: PropDef = {
       propNum,
       name: key,
       type,
-      byteOffset: byteOffset,
-      offset: offset,
-      byteSize: byteSize,
+      byteOffset,
+      offset,
+      byteSize,
+      allowUndefined,
     };
     propDefs.push(propDef);
 
@@ -129,7 +142,9 @@ export function structProp(type: StructPropType, options?: StructPropOptions) {
     // TODO: Move the descriptors to the prototype to avoid code duplication/closures
     descriptor.get = function (this: BufferStruct) {
       let value: unknown;
-      if (type === 'string') {
+      if (allowUndefined && this.isUndefined(propNum)) {
+        value = undefined;
+      } else if (type === 'string') {
         const length = this.uint16array[offset];
         if (!length) return '';
         if (length > MAX_STRING_SIZE) {
@@ -157,6 +172,18 @@ export function structProp(type: StructPropType, options?: StructPropOptions) {
     descriptor.set = function (this: BufferStruct, value: unknown) {
       if (options?.propToBuffer) {
         value = options.propToBuffer(value);
+      }
+      if (allowUndefined) {
+        const isUndefined = this.isUndefined(propNum);
+        if (value === undefined) {
+          if (isUndefined) return;
+          this.setDirty(propNum);
+          this.setUndefined(propNum, true);
+          return;
+        } else if (isUndefined) {
+          this.setDirty(propNum);
+          this.setUndefined(propNum, false);
+        }
       }
       if (valueIsType('string', type, value)) {
         if (!valuesAreEqual(value, this[key as keyof BufferStruct])) {
@@ -205,6 +232,7 @@ interface PropDef {
   byteOffset: number;
   offset: number;
   byteSize: number;
+  allowUndefined: boolean;
 }
 
 /**
@@ -223,6 +251,10 @@ interface PropDef {
  *    Dirty Bit Mask 1 (Property Indices 0-31)
  * Int32[DIRTY_INT32_INDEX + 1 = 7]
  *    Dirty Bit Mask 2 (Property Indices 32-63)
+ * Int32[UNDEFINED_INT32_INDEX = 8]
+ *    Undefined Bit Mask 1 (Property Indices 0-31)
+ * Int32[UNDEFINED_INT32_INDEX + 1 = 9]
+ *    Undefined Bit Mask 2 (Property Indices 32-63)
  *
  * HEADER SIZE MUST BE A MULTIPLE OF 8 BYTES (64-BIT ALIGNMENT)
  */
@@ -237,7 +269,7 @@ export abstract class BufferStruct {
   static staticInitialized = false;
   static typeId = 0;
   static typeIdStr = '';
-  static size = 8 * 4; // Header size
+  static size = 10 * 4; // Header size
   static propDefs: PropDef[] = [];
 
   constructor(buffer?: SharedArrayBuffer) {
@@ -269,6 +301,13 @@ export abstract class BufferStruct {
     if (isNew) {
       this.int32array[TYPEID_INT32_INDEX] = typeId;
       this.float64array[ID_FLOAT64_INDEX] = ThreadX.instance.generateUniqueId();
+
+      // Iterate the propDefs and set undefined for all properties marked `allowUndefined`
+      for (const propDef of constructor.propDefs) {
+        if (propDef.allowUndefined) {
+          this.setUndefined(propDef.propNum, true);
+        }
+      }
     } else if (this.int32array[TYPEID_INT32_INDEX] !== typeId) {
       // If this is an existing buffer, verify the TypeID is the same as expected
       // by this class
@@ -347,6 +386,30 @@ export abstract class BufferStruct {
     return !!(
       this.int32array[DIRTY_INT32_INDEX] ||
       this.int32array[DIRTY_INT32_INDEX + 1]
+    );
+  }
+
+  protected setUndefined(propIndex: number, value: boolean) {
+    const undefWordOffset = Math.floor(propIndex / 32);
+    const undefBitOffset = propIndex - undefWordOffset * 32;
+
+    if (value) {
+      this.int32array[UNDEFINED_INT32_INDEX + undefWordOffset] =
+        this.int32array[UNDEFINED_INT32_INDEX + undefWordOffset]! |
+        (1 << undefBitOffset);
+    } else {
+      this.int32array[UNDEFINED_INT32_INDEX + undefWordOffset] =
+        this.int32array[UNDEFINED_INT32_INDEX + undefWordOffset]! &
+        ~(1 << undefBitOffset);
+    }
+  }
+
+  protected isUndefined(propIndex: number): boolean {
+    const undefWordOffset = Math.floor(propIndex / 32);
+    const undefBitOffset = propIndex - undefWordOffset * 32;
+    return !!(
+      this.int32array[UNDEFINED_INT32_INDEX + undefWordOffset]! &
+      (1 << undefBitOffset)
     );
   }
 

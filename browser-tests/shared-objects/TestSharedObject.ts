@@ -55,9 +55,9 @@ export class TestSharedObject
   declare numProp1: number;
   declare stringProp1: string;
   declare booleanProp1: boolean;
-  declare numProp2: number;
-  declare stringProp2: string;
-  declare booleanProp2: boolean;
+  declare numProp2?: number;
+  declare stringProp2?: string;
+  declare booleanProp2: boolean | undefined;
 
   exposedOnDestroy() {
     // Exposed to allow testing of onDestroy() method
