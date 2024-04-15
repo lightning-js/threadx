@@ -42,7 +42,7 @@ and automatically recompile
 - `npm run typedoc`
 
 This builds the TypeDoc API documentation files which you can browse using your
-web browser from the `docs` folder.
+web browser from the `typedocs` folder.
 
 ## Tests
 
